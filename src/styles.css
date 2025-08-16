@@ -1,0 +1,60 @@
+/* ベース書体（システムフォントで高速） */
+:root { font-family: system-ui, sans-serif; }
+* { box-sizing: border-box; }
+
+body { margin: 0; background: #0b1220; color: #e5e7eb; }
+
+/* 縦向きスマホ想定のグリッド。上：ヘッダ → カード → タイル → フッタ */
+.app {
+  position: relative;
+  min-height: 100svh;            /* モバイルのアドレスバー変動に強い */
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 16px;
+}
+
+/* 薄い背景画像（/public/bg.png）。無ければただの透明なのでOK */
+.bg {
+  position: fixed;
+  inset: 0;
+  background: url("/bg.png") center/cover no-repeat fixed;
+  opacity: .08;
+  pointer-events: none;          /* クリックなどの邪魔をしない */
+  z-index: -1;                   /* すべての下に敷く */
+}
+
+/* ヘッダ */
+.row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-weight: 800; letter-spacing: .6px; opacity: .9; }
+.start {
+  padding: 10px 18px; border: none; border-radius: 999px;
+  background: #22c55e; color: #0b1220; font-weight: 800; cursor: pointer;
+}
+
+/* 指示カード。正誤で背景色が一瞬変わる */
+.card {
+  background: #0f172a; border-radius: 16px; padding: 20px 16px; text-align: center;
+  transition: background 120ms ease;
+}
+.app.flash-ok .card { background: #052e15; }  /* 正解時の薄い緑 */
+.app.flash-ng .card { background: #2a0b0b; }  /* 不正解時の薄い赤 */
+
+.hint { margin: 0; opacity: .9; font-size: 18px; }
+.target { margin: 8px 0 0; font-size: 42px; font-weight: 900; letter-spacing: 2px; }
+
+/* 2×2 の大きいタイル */
+.grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+}
+.color {
+  height: 96px; border: none; border-radius: 16px; cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0,0,0,.3) inset;
+}
+.color:active { transform: scale(.98); } /* 押した感の微ディンプル */
+
+.foot { text-align: center; opacity: .8; padding-bottom: 8px; }
