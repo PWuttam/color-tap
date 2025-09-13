@@ -101,7 +101,28 @@ export default function App() {
       </section>
 
       {/* 最下部：連続正解の表示 */}
-      <footer className="foot">Streak: {streak}</footer>
+      <footer className="foot">
+        <div className="left-buttons">
+          <button
+            type="button"
+            className="icon-btn settings-btn"
+            aria-label="Open settings"
+            onClick={() => console.log("settings clicked")}
+          >
+            ⚙️
+          </button>
+          <button
+            type="button"
+            className="icon-btn add-color-btn"
+            aria-label="Add color (temporary)"
+            onClick={() => console.log("add color clicked")}
+          >
+            ＋
+          </button>
+        </div>
+
+        <span className="foot-info">Streak: {streak}</span>
+      </footer>
     </main>
   );
 }
