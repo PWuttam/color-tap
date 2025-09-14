@@ -4,6 +4,8 @@ export const PALETTE = [
   { name: "BLUE", value: "#1677ff" },
   { name: "YELLOW", value: "#fadb14" },
   { name: "GREEN", value: "#22c55e" },
+  { name: "Orange", value: "#FFB067" },
+  { name: "White",  value: "#FFFFFF" },
 ];
 
 // 色を増やしたい時は、ここに追加するだけでUI側は自動で拾う
