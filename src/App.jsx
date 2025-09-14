@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { PALETTE } from "./colors";
-import { playClick, playCorrect, playWrong } from "./sounds";
+import { playCorrect, playWrong } from "./sounds";
 
 export default function App() {
+  // 使う色セット（初期は3色）
+  const [currentColors, setCurrentColors] = useState(PALETTE.slice(0, 3));
+
   // 今タップしてほしい「正解の色」
   const [target, setTarget] = useState(PALETTE[0]);
   // 画面に出す指示文（英語表示の要件に合わせる）
@@ -14,28 +17,45 @@ export default function App() {
 
   // 初期化：最初の色をランダムに
   useEffect(() => {
-    setTarget(PALETTE[Math.floor(Math.random() * PALETTE.length)]);
-  }, []);
+    setTarget(currentColors[Math.floor(Math.random() * currentColors.length)]);
+  }, [currentColors]);
 
   // タイルの並びはターゲットが変わるたびにシャッフル
   const choices = useMemo(() => {
     // targetを使うことで依存配列の意味を持たせる
     console.log("新しいターゲット:", target.name);
-    return [...PALETTE].sort(() => Math.random() - 0.5);
-  }, [target]);
+    return [...currentColors].sort(() => Math.random() - 0.5);
+  }, [currentColors, target]);
 
   // 次に狙ってほしい色をランダムに選ぶ
   const nextTarget = () => {
-    const n = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+    const n = currentColors[Math.floor(Math.random() * currentColors.length)];
     setTarget(n);
   };
 
-  // Startボタン：状態を初期化 → 新ターゲット → クリック音
+  // Startボタン：状態を初期化 → 新ターゲット
   const onStart = () => {
     setStreak(0);
     setMessage("Tap this color");
-    nextTarget();
-    playClick();
+
+    // 色セットを初期化（最初は3色）
+    const initial = PALETTE.slice(0, 3);
+    setCurrentColors(initial);
+
+    // 初期3色からランダムにターゲットを選ぶ
+    const n = initial[Math.floor(Math.random() * initial.length)];
+    setTarget(n);
+  };
+
+  // 一時的な「色を追加」：PALETTEの先頭から順に、まだ入っていない色を追加（最大6）
+  const addColor = () => {
+    if (currentColors.length >= 6) return;
+    const next = PALETTE.find(c => !currentColors.some(x => x.name === c.name));
+    if (next) {
+      const updated = [...currentColors, next];
+      setCurrentColors(updated);
+      setTarget(updated[Math.floor(Math.random() * updated.length)]);
+    }
   };
 
   // 色タップ時の判定
@@ -115,7 +135,9 @@ export default function App() {
             type="button"
             className="icon-btn add-color-btn"
             aria-label="Add color (temporary)"
-            onClick={() => console.log("add color clicked")}
+            onClick={addColor}
+            disabled={currentColors.length >= 6}
+            title={currentColors.length >= 6 ? "Max 6 colors" : "Add one color"}
           >
             ＋
           </button>
