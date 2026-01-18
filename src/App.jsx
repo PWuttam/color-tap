@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PALETTE } from "./colors";
-import { playCorrect, playWrong } from "./sounds";
+import { playClick, playCorrect, playWrong } from "./sounds";
 
 export default function App() {
   // 使う色セット（初期は3色）
   const [currentColors, setCurrentColors] = useState(PALETTE.slice(0, 3));
+
+  // ダブルタップ防止用のロック
+  const lockRef = useRef(false);
 
   // 今タップしてほしい「正解の色」
   const [target, setTarget] = useState(PALETTE[0]);
@@ -60,6 +63,13 @@ export default function App() {
 
   // 色タップ時の判定
   const onTap = (c) => {
+    // ダブルタップ防止：ロック中なら無視
+    if (lockRef.current) return;
+    lockRef.current = true;
+
+    // タップ時は必ずクリック音を鳴らす
+    playClick();
+
     if (c.name === target.name) {
       // 正解：緑フラッシュ → メッセージ更新 → ストリーク+1 → 正解音
       setFlash("ok");
@@ -72,6 +82,7 @@ export default function App() {
         setFlash(null);
         setMessage("Tap this color");
         nextTarget();
+        lockRef.current = false;
       }, 600);
     } else {
       // 不正解：赤フラッシュ → メッセージ更新 → ストリークリセット → エラー音
@@ -84,6 +95,7 @@ export default function App() {
       setTimeout(() => {
         setFlash(null);
         setMessage("Tap this color");
+        lockRef.current = false;
       }, 500);
     }
   };
